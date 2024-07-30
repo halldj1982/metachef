@@ -20,8 +20,8 @@ export async function POST(req: Request) {
     const lastMessage = messages[messages.length - 1]
 
     // Get the context from the last message
-    const context = await getContext(lastMessage.content, '')
-    //const context = "";
+    //const context = await getContext(lastMessage.content, '')
+    const context = "";
 
 
     const prompt = [
@@ -53,6 +53,7 @@ export async function POST(req: Request) {
     // Respond with the stream
     return new StreamingTextResponse(stream)
   } catch (e) {
+  console.log(e)
     throw (e)
   }
 }
