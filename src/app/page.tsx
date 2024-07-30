@@ -31,7 +31,7 @@ const Page: React.FC = () => {
   };
 
   useEffect(() => {
-    /*const getContext = async () => {
+    const getContext = async () => {
       const response = await fetch("/api/context", {
         method: "POST",
         body: JSON.stringify({
@@ -40,9 +40,9 @@ const Page: React.FC = () => {
       });
       const { context } = await response.json();
       setContext(context.map((c: any) => c.id));
-    };*/
+    };
     if (gotMessages && messages.length >= prevMessagesLengthRef.current) {
-      //getContext();
+      getContext();
     }
 
     prevMessagesLengthRef.current = messages.length;

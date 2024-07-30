@@ -14,7 +14,6 @@ export const runtime = 'edge'
 
 export async function POST(req: Request) {
   try {
-    console.log(process.env.OPENAI_API_KEY);
     const { messages } = await req.json()
 
     // Get the last message
