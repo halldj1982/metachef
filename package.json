@@ -5,7 +5,7 @@
   "homepage": "https://staging.d18de3x86ia4dg.amplifyapp.com/#/",
   "scripts": {
     "dev": "next dev -p 3002",
-    "build": "next build && next export",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "test:e2e": "playwright test",
