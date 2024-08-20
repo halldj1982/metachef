@@ -10,6 +10,7 @@ interface Chat {
   handleMessageSubmit: (e: FormEvent<HTMLFormElement>) => Promise<void>;
   messages: Message[];
   topK: number;
+  promptType: string;
 }
 
 const Chat: React.FC<Chat> = ({
@@ -17,10 +18,18 @@ const Chat: React.FC<Chat> = ({
   handleInputChange,
   handleMessageSubmit,
   messages,
-  topK
+  topK,
+  promptType,
 }) => {
   return (
     <div id="chat" className="flex-grow flex flex-col lg:w-3/5 mr-4 mx-5 lg:mx-0 overflow-hidden">
+      <div className="border-2 border-gray-600 p-6 rounded-lg flex-grow flex 
+      flex-col justify-end bg-gray-700">
+
+        <div className="text-green-300 my-2 p-3 rounded shadow-md hover:shadow-lg transition-shadow duration-200 flex 
+          slide-in-bottom bg-gray-800 border border-gray-600 message-glow"> {promptType}
+        </div>
+    </div>
       <Messages messages={messages} />
       <>
         <form

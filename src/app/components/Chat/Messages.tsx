@@ -1,4 +1,4 @@
-import { Message } from "ai";
+import { Message } from "ai/react";
 import { useRef } from "react";
 
 export default function Messages({ messages }: { messages: Message[] }) {
@@ -16,7 +16,7 @@ export default function Messages({ messages }: { messages: Message[] }) {
           <div className="rounded-tl-lg bg-gray-800 p-2 border-r border-gray-600 flex items-center">
             {msg.role === "assistant" ? "🤖" : "🧑‍💻"}
           </div>
-          <pre className="ml-2 flex items-center text-gray-200 whitespace-pre-wrap block">
+          <pre className="ml-2 flex items-center text-gray-200 whitespace-pre-wrap block text-xs">
             {msg.content}
           </pre>
         </div>

@@ -15,7 +15,7 @@ export const runtime = 'edge'
 
 export async function POST(req: Request) {
   try {
-    const { messages, topK } = await req.json()
+    const { messages, topK, standardPrompt } = await req.json()
 
     // Get the last message
     const lastMessage = messages[messages.length - 1]
@@ -26,7 +26,7 @@ export async function POST(req: Request) {
     //const context = "";
 
 
-    const prompt = [
+    const prompt = (!standardPrompt) ?  [
       {
         role: 'system',
         content: Prompts.BASE_BLOCK 
@@ -36,7 +36,15 @@ export async function POST(req: Request) {
                     + Prompts.FIND_INGREDIENTS_BLOCK
                     + Prompts.FORMAT_BLOCK
       },
+    ] : [
+      {
+        role: 'system',
+        content: Prompts.BASE_BLOCK 
+                    + Prompts.GENERIC_RECIPE_BLOCK
+                    + Prompts.FORMAT_BLOCK
+      },
     ]
+
 
     //console.log(prompt[0].content);
 
