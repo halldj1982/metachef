@@ -28,7 +28,7 @@ const getMatchesFromEmbeddings = async (embeddings: number[], topK: number, name
 
   // Get the namespace
   const pineconeNamespace = index.namespace(namespace ?? '')
-
+  console.log("TopK to be used: " + topK);
   try {
     // Query the index with the defined request
     const queryResult = await pineconeNamespace.query({

@@ -16,7 +16,7 @@ export const Context: React.FC<ContextProps> = ({ className, selected }) => {
 
   const [splittingMethod, setSplittingMethod] = useState("markdown");
   const [chunkSize, setChunkSize] = useState(256);
-  const [overlap, setOverlap] = useState(1);
+  const [chunkOverlap, setOverlap] = useState(1);
 
   // Scroll to selected card
   useEffect(() => {
@@ -43,7 +43,7 @@ export const Context: React.FC<ContextProps> = ({ className, selected }) => {
             setCards,
             splittingMethod,
             chunkSize,
-            overlap
+            chunkOverlap
           )
         }
       />
@@ -103,21 +103,21 @@ export const Context: React.FC<ContextProps> = ({ className, selected }) => {
               </div>
               <div className="flex flex-col w-full">
                 <DropdownLabel htmlFor="overlap">
-                  Overlap: {overlap}
+                  Overlap: {chunkOverlap}
                 </DropdownLabel>
                 <input
                   className="p-2 bg-gray-700"
                   type="range"
                   id="overlap"
-                  min={1}
+                  min={0}
                   max={200}
                   onChange={(e) => setOverlap(parseInt(e.target.value))}
                 />
               </div>
             </div>
           )}
-        </div>
       </div>
+        </div>
       <div className="flex flex-wrap w-full">
         {cards &&
           cards.map((card, key) => (

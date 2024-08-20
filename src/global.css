@@ -78,3 +78,30 @@
 .animate-pulse-once {
   animation: pulse 5s cubic-bezier(0, 0, 0.2, 1) 1;
 }
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1; /* Ensure it takes up available space */
+  overflow: hidden; /* Prevent unintended overflow */
+}
+
+.chat-container {
+  flex-grow: 1; /* Ensure it takes up available space */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Prevent unintended overflow */
+}
+
+.messages-container {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1; /* Ensure it takes up available space */
+  overflow-y: scroll; /* Enable vertical scrolling */
+}

@@ -1,3 +1,5 @@
+"use server";
+
 import { getEmbeddings } from "@/utils/embeddings";
 import { Document, MarkdownTextSplitter, RecursiveCharacterTextSplitter } from "@pinecone-database/doc-splitter";
 import { Pinecone, PineconeRecord, ServerlessSpecCloudEnum } from "@pinecone-database/pinecone";
@@ -5,6 +7,7 @@ import { chunkedUpsert } from '../../utils/chunkedUpsert'
 import md5 from "md5";
 import { Crawler, Page } from "./crawler";
 import { truncateStringByBytes } from "@/utils/truncateString"
+
 
 interface SeedOptions {
   splittingMethod: string
@@ -14,34 +17,43 @@ interface SeedOptions {
 
 type DocumentSplitter = RecursiveCharacterTextSplitter | MarkdownTextSplitter
 
+
 async function seed(url: string, limit: number, indexName: string, cloudName: ServerlessSpecCloudEnum, regionName: string, options: SeedOptions) {
+  
+  // Initialize the Pinecone client
+  const pinecone = new Pinecone();
+
+  // Destructure the options object
+  const { splittingMethod, chunkSize, chunkOverlap } = options;
+  console.log("SeedOptions in Seed is: " + JSON.stringify(options));
+
+  // Create a new Crawler with depth 1 and maximum pages as limit
+  const crawler = new Crawler(1, limit || 100);
+  
   try {
-    // Initialize the Pinecone client
-    const pinecone = new Pinecone();
-
-    // Destructure the options object
-    const { splittingMethod, chunkSize, chunkOverlap } = options;
-
-    // Create a new Crawler with depth 1 and maximum pages as limit
-    const crawler = new Crawler(1, limit || 100);
+    
 
     // Crawl the given URL and get the pages
     const pages = await crawler.crawl(url) as Page[];
+    //console.log(pages);
 
     // Choose the appropriate document splitter based on the splitting method
     const splitter: DocumentSplitter = splittingMethod === 'recursive' ?
       new RecursiveCharacterTextSplitter({ chunkSize, chunkOverlap }) : new MarkdownTextSplitter({});
-
+      
     // Prepare documents by splitting the pages
     const documents = await Promise.all(pages.map(page => prepareDocument(page, splitter)));
-
+    //console.log(documents);
+    console.log ("Chunksize is: " + chunkSize);
+    console.log("Chunk Overlap is: " + chunkOverlap);
+    
     // Create Pinecone index if it does not exist
     const indexList: string[] = (await pinecone.listIndexes())?.indexes?.map(index => index.name) || [];
     const indexExists = indexList.includes(indexName);
     if (!indexExists) {
       await pinecone.createIndex({
         name: indexName,
-        dimension: 1536,
+        dimension: 1024,
         waitUntilReady: true,
         spec: { 
           serverless: { 
@@ -56,14 +68,16 @@ async function seed(url: string, limit: number, indexName: string, cloudName: Se
 
     // Get the vector embeddings for the documents
     const vectors = await Promise.all(documents.flat().map(embedDocument));
-
+    
     // Upsert vectors into the Pinecone index
-    await chunkedUpsert(index!, vectors, '', 10);
+    await chunkedUpsert(index!, vectors, '', chunkSize);
 
     // Return the first document
     return documents[0];
   } catch (error) {
     console.error("Error seeding:", error);
+    console.log ("Chunksize is: " + chunkSize);
+    console.log("Chunk Overlap is: " + chunkOverlap);
     throw error;
   }
 }
@@ -111,6 +125,8 @@ async function prepareDocument(page: Page, splitter: DocumentSplitter): Promise<
 
   // Map over the documents and add a hash to their metadata
   return docs.map((doc: Document) => {
+    console.log("pageContent length: " + doc.pageContent.length);
+    console.log("text length: " + doc.metadata["text"]);
     return {
       pageContent: doc.pageContent,
       metadata: {

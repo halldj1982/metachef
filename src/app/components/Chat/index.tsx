@@ -9,6 +9,7 @@ interface Chat {
   handleInputChange: (e: ChangeEvent<HTMLInputElement>) => void;
   handleMessageSubmit: (e: FormEvent<HTMLFormElement>) => Promise<void>;
   messages: Message[];
+  topK: number;
 }
 
 const Chat: React.FC<Chat> = ({
@@ -16,12 +17,14 @@ const Chat: React.FC<Chat> = ({
   handleInputChange,
   handleMessageSubmit,
   messages,
+  topK
 }) => {
   return (
-    <div id="chat" className="flex flex-col w-full lg:w-3/5 mr-4 mx-5 lg:mx-0">
+    <div id="chat" className="flex-grow flex flex-col lg:w-3/5 mr-4 mx-5 lg:mx-0 overflow-hidden">
       <Messages messages={messages} />
       <>
         <form
+        
           onSubmit={handleMessageSubmit}
           className="mt-5 mb-5 relative bg-gray-700 rounded-lg"
         >
