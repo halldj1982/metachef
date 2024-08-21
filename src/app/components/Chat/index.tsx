@@ -23,8 +23,7 @@ const Chat: React.FC<Chat> = ({
 }) => {
   return (
     <div id="chat" className="flex-grow flex flex-col lg:w-3/5 mr-4 mx-5 lg:mx-0 overflow-hidden">
-      <div className="border-2 border-gray-600 p-6 rounded-lg flex-grow flex 
-      flex-col justify-end bg-gray-700">
+      <div className="border-2 border-gray-600 p-6 rounded-lg justify-end bg-gray-700">
 
         <div className="text-green-300 my-2 p-3 rounded shadow-md hover:shadow-lg transition-shadow duration-200 flex 
           slide-in-bottom bg-gray-800 border border-gray-600 message-glow"> {promptType}

@@ -9,19 +9,37 @@ import Chat from "@/components/Chat";
 import { useChat } from "ai/react";
 import InstructionModal from "./components/InstructionModal";
 import { AiFillGithub, AiOutlineInfoCircle } from "react-icons/ai";
+import Preferences from "./components/Preferences";
 
 const Page: React.FC = () => {
   const [gotMessages1, setGotMessages1] = useState(false);
-  const [context1, setContext1] = useState<string[] | null>(null);
   const [gotMessages2, setGotMessages2] = useState(false);
   const [context2, setContext2] = useState<string[] | null>(null);
   const [topK, setTopK] = useState(3);
+  const [nationality, setNationality] = useState("Any");
+  const [protein, setProtein] = useState("Any");
+  const [cookingMethod, setCookingMethod] = useState("Any");
+  const [dietConsiderations, setDietConsiderations] = useState<string[]>([]);
+  const [flavors, setFlavors] = useState({
+    sweet: 3,
+    salty: 3,
+    sour: 3,
+    bitter: 3,
+    spice: 3,
+  });
+  const [showFlavorSliders, setShowFlavorSliders] = useState(false);
+
   const [isModalOpen, setModalOpen] = useState(false);
 
   const { messages: messages1, input: input1, handleInputChange: handleInputChange1, handleSubmit: handleSubmit1 } = useChat({
     body: {
       topK: topK,
-      standardPrompt: true
+      standardPrompt: true,
+      nationality: "Any",
+      protein: "Any",
+      cookingMethod: "Any",
+      dietConsiderations: "None",
+      flavorBalance: null
     },
     onFinish: async () => {
       setGotMessages1(true);
@@ -31,7 +49,12 @@ const Page: React.FC = () => {
   const { messages: messages2, input: input2, handleInputChange: handleInputChange2, handleSubmit: handleSubmit2 } = useChat({
     body: {
       topK: topK,
-      standardPrompt: false
+      standardPrompt: false,
+      nationality: nationality,
+      protein: protein,
+      cookingMethod: cookingMethod,
+      dietConsiderations: dietConsiderations.join(", "),
+      flavorBalance: showFlavorSliders ? flavors: null
     },
     onFinish: async () => {
       setGotMessages2(true);
@@ -52,7 +75,6 @@ const Page: React.FC = () => {
   const handleMessageSubmit1 = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     handleSubmit1(e);
-    setContext1(null);
     setGotMessages1(false);
   };
 
@@ -61,6 +83,13 @@ const Page: React.FC = () => {
     handleSubmit2(e);
     setContext2(null);
     setGotMessages2(false);
+  };
+
+  const handleFlavorChange = (flavor: string, value: number) => {
+    setFlavors((prevFlavors) => ({
+      ...prevFlavors,
+      [flavor]: value,
+    }));
   };
 
   useEffect(() => {
@@ -76,8 +105,8 @@ const Page: React.FC = () => {
           topK: topK
         }),
       });
-      const { context } = await response.json();
-      setContext2(context.map((c: any) => c.id));
+      const { context2 } = await response.json();
+      setContext2(context2.map((c: any) => c.id));
     };
     if (gotMessages2 && messages2.length >= prevMessagesLengthRef2.current) {
       getContext2();
@@ -107,23 +136,23 @@ const Page: React.FC = () => {
         />
         
         <div className="absolute transform translate-x-full transition-transform duration-500 ease-in-out right-0 w-2/3 h-full bg-gray-700 overflow-y-auto lg:static lg:translate-x-0 lg:w-2/5 lg:mx-2 rounded-lg">
-          <Context className="" selected={context2} />
+        <Preferences
+            nationality={nationality}
+            setNationality={setNationality}
+            protein={protein}
+            setProtein={setProtein}
+            cookingMethod={cookingMethod}
+            setCookingMethod={setCookingMethod}
+            dietConsiderations={dietConsiderations}
+            setDietConsiderations={setDietConsiderations}
+            flavors={flavors}
+            setFlavors={handleFlavorChange}
+            showFlavorSliders={showFlavorSliders}
+            setShowFlavorSliders={setShowFlavorSliders}
+          />
+          {/*<Context className="" selected={context2} */}
           <div className="flex p-2"></div>
-          <div className="flex flex-col w-full">
-                <DropdownLabel htmlFor="topK">
-                  topK: {topK}
-                  </DropdownLabel>
-                
-                <input
-                  className="p-2 bg-gray-700"
-                  type="range"
-                  id="topK"
-                  min={1}
-                  max={200}
-                  onChange={(e) => setTopK(parseInt(e.target.value))}
-                />
-
-        </div>
+          
         </div>
         <button
           type="button"

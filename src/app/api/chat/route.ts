@@ -15,7 +15,10 @@ export const runtime = 'edge'
 
 export async function POST(req: Request) {
   try {
-    const { messages, topK, standardPrompt } = await req.json()
+    const { messages, topK, standardPrompt, nationality, protein, cookingMethod, dietConsiderations, flavorBalance} 
+      = await req.json();
+    
+      const {sweet = "", salty = "", sour = "", bitter = "", spice = ""} = flavorBalance || {};
 
     // Get the last message
     const lastMessage = messages[messages.length - 1]
@@ -25,7 +28,19 @@ export async function POST(req: Request) {
     //console.log("Context is:" + context);
     //const context = "";
 
-
+    const preferences = `Nationality = ${nationality}
+                          Protein = ${protein}
+                          Cooking method = ${cookingMethod}
+                          Dietary Restrictions = ${dietConsiderations}
+                          `
+    const flavors = (flavorBalance === null) ? `` : `Sweetness Level: ${sweet} out of 5
+                        Salt Level: ${salty} out of 5
+                        Sourness Level: ${sour} out of 5
+                        Bitterness Level: ${bitter} out of 5
+                        Spice Level: ${spice} out of 5`
+    console.log(`${preferences} 
+                 ${flavors}`);
+    
     const prompt = (!standardPrompt) ?  [
       {
         role: 'system',
@@ -35,6 +50,10 @@ export async function POST(req: Request) {
                     + Prompts.CONTEXT_ONLY_RECIPE_BLOCK
                     + Prompts.FIND_INGREDIENTS_BLOCK
                     + Prompts.FORMAT_BLOCK
+                    + `START PREFERENCES BLOCK
+                        ${preferences} 
+                        ${flavors})
+                        END OF PREFERENCES BLOCK`
       },
     ] : [
       {
