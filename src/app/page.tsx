@@ -10,11 +10,12 @@ import { useChat } from "ai/react";
 import InstructionModal from "./components/InstructionModal";
 import { AiFillGithub, AiOutlineInfoCircle } from "react-icons/ai";
 import Preferences from "./components/Preferences";
+import {Tabs, Tab} from "@nextui-org/tabs";
 
 const Page: React.FC = () => {
   const [gotMessages1, setGotMessages1] = useState(false);
   const [gotMessages2, setGotMessages2] = useState(false);
-  const [context2, setContext2] = useState<string[] | null>(null);
+  const [context, setContext] = useState<string[]>([]);
   const [topK, setTopK] = useState(3);
   const [nationality, setNationality] = useState("Any");
   const [protein, setProtein] = useState("Any");
@@ -81,7 +82,7 @@ const Page: React.FC = () => {
   const handleMessageSubmit2 = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     handleSubmit2(e);
-    setContext2(null);
+    setContext([]);
     setGotMessages2(false);
   };
 
@@ -97,7 +98,7 @@ const Page: React.FC = () => {
   }, [messages1, gotMessages1]);
 
   useEffect(() => {
-    const getContext2 = async () => {
+    const getContext = async () => {
       const response = await fetch("/api/context", {
         method: "POST",
         body: JSON.stringify({
@@ -105,11 +106,11 @@ const Page: React.FC = () => {
           topK: topK
         }),
       });
-      const { context2 } = await response.json();
-      setContext2(context2.map((c: any) => c.id));
+      const { context } = await response.json();
+      setContext(context.map((c: any) => c.id));
     };
     if (gotMessages2 && messages2.length >= prevMessagesLengthRef2.current) {
-      getContext2();
+      getContext();
     }
 
     prevMessagesLengthRef2.current = messages2.length;
@@ -136,21 +137,32 @@ const Page: React.FC = () => {
         />
         
         <div className="absolute transform translate-x-full transition-transform duration-500 ease-in-out right-0 w-2/3 h-full bg-gray-700 overflow-y-auto lg:static lg:translate-x-0 lg:w-2/5 lg:mx-2 rounded-lg">
-        <Preferences
-            nationality={nationality}
-            setNationality={setNationality}
-            protein={protein}
-            setProtein={setProtein}
-            cookingMethod={cookingMethod}
-            setCookingMethod={setCookingMethod}
-            dietConsiderations={dietConsiderations}
-            setDietConsiderations={setDietConsiderations}
-            flavors={flavors}
-            setFlavors={handleFlavorChange}
-            showFlavorSliders={showFlavorSliders}
-            setShowFlavorSliders={setShowFlavorSliders}
-          />
-          {/*<Context className="" selected={context2} */}
+        <div className="flex w-full flex-col text-white">
+            <Tabs aria-label="Options" 
+              variant = "bordered">
+                
+              <Tab key="preferences" title="Preferences">
+                <Preferences
+                    nationality={nationality}
+                    setNationality={setNationality}
+                    protein={protein}
+                    setProtein={setProtein}
+                    cookingMethod={cookingMethod}
+                    setCookingMethod={setCookingMethod}
+                    dietConsiderations={dietConsiderations}
+                    setDietConsiderations={setDietConsiderations}
+                    flavors={flavors}
+                    setFlavors={handleFlavorChange}
+                    showFlavorSliders={showFlavorSliders}
+                    setShowFlavorSliders={setShowFlavorSliders}
+                  />
+              </Tab>
+              <Tab key="context" title="Context">
+                <Context className="" selected={context}/>               
+              </Tab>
+            
+            </Tabs>
+          </div>  
           <div className="flex p-2"></div>
           
         </div>

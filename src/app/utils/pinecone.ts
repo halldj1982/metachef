@@ -1,10 +1,12 @@
 import { Pinecone, type ScoredPineconeRecord } from "@pinecone-database/pinecone";
+import { ByteLengthQueuingStrategy } from "node:stream/web";
 
 export type Metadata = {
   url: string,
   text: string,
   chunk: string,
-  hash: string
+  hash: string,
+  title: string,
 }
 
 // The function `getMatchesFromEmbeddings` is used to retrieve matches for the given embeddings
@@ -36,6 +38,13 @@ const getMatchesFromEmbeddings = async (embeddings: number[], topK: number, name
       topK,
       includeMetadata: true,
     })
+    /*console.log("Matches: ");
+    queryResult.matches?.forEach(match => {
+      console.log("Title: " + match.metadata?.title ?? "");
+      console.log("Chunk: " + match.metadata?.chunk ?? "")
+      console.log("Score: " + match.score)
+      console.log("");
+    })*/
     return queryResult.matches || []
   } catch (e) {
     // Log the error and throw it
